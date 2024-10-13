@@ -91,7 +91,7 @@ class Robot:
         Last_error = 0
         while self.robot.distance() <= CM:
             if angle > target_value:
-                target_value += angle:abs(angle)
+                target_value += angle/abs(angle)
             error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Integral =+ error
