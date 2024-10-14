@@ -16,15 +16,15 @@ def Run1():
     KI = 0.00001 #Integral gain
     KD = 3.5 #Derivative gain
 
-    robot.B_PID(40, 30, KP, KI, KD)
+    robot.PID(40, -30, KP, KI, KD)
     robot.turn(30, KP, KI, KD)
-    robot.B_PID(40, 15, KP, KI, KD)
+    robot.PID(40, -15, KP, KI, KD)
     robot.turn(-30, KP, KI, KD)
-    robot.B_PID(40, 20, KP, KI, KD)
+    robot.PID(40, -20, KP, KI, KD)
     robot.turn(-60, KP, KI, KD)
-    robot.B_PID(40, 12, KP, KI, KD)
+    robot.PID(40, -12, KP, KI, KD)
     robot.PID(40, 14, KP, KI, KD)
     robot.turn(-30, KP, KI, KD)
-    robot.B_PID(40,5, KP, KI, KD)
+    robot.PID(40, -5, KP, KI, KD)
     run_parallel(robot.C_motor.run_angle(speed=180, rotation_angle=360), robot.D_motor.run_angle(speed=180, rotation_angle=360))
 Run1():

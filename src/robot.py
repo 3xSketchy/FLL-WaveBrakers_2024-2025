@@ -72,9 +72,17 @@ class Robot:
         run_parallel(self.left_motor.brake(), self.right_motor.brake())
         self.robot.reset()
 
-    def PID(self,speed, MM, KP, KI, KD):
-        CM = 10 * MM #Makes the MM CM by multiplying it by 10
+    def check_drive_direction(self, speed, drive_distance): #Will Make the PID a forward or a backwards
 
+        if speed * drive_distance > 0:  # forward driving
+            drive_direction = 1
+        else:   # backward driving
+            drive_direction = -1
+        
+        drive_speed = drive_direction * fabs(speed)
+        return drive_speed, drive_direction
+
+    def PID(self,speed, distance, KP, KI, KD):
         wait(25)
         self.gyro.reset_angle(0) #Resets the gyro angle
         wait(10)
@@ -83,7 +91,11 @@ class Robot:
         Integral = 0
         Last_error = 0
 
-        while self.robot.distance() <= CM:
+        drive_speed, drive_direction = self.check_drive_direction(speed , distance)
+
+        CM = 10 * distance #Makes the MM CM by multiplying it by 10
+
+        while fabs(self.robot.distance()) <= CM:
             error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Integral =+ error
@@ -97,34 +109,7 @@ class Robot:
             Last_error = error #Sets our Last error up
         Stop()
 
-    def B_PID(self,speed, MM, KP, KI, KD):
-        CM = -10*MM #Makes the MM CM by multiplying it by 10
-
-        wait(25)
-        self.yro.reset_angle(0) #Resets the gyro angle
-        wait(10)
-
-        target_value = 0
-        Integral = 0
-        Last_error = 0
-
-        while self.robot.distance() >= CM:
-            error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
-            Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
-            Integral =+ error
-            Ifix = Integral*KI #Multiplies Our Integral by the Integral Gain to have our Integral total
-            Derivative = error-Last_error
-            Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
-            Correction = Pfix+Ifix+Dfix #Adds all the PID Totals to one Amount
-
-            self.robot.drive(speed*-3.6, 0-Correction)
-
-            Last_error = error #Sets our Last error up
-        Stop()
-
-    def Curve(self,speed, MM, angle, KP, KI, KD):
-        CM = 10 * MM #Makes the MM CM by multiplying it by 10
-
+    def Curve(self,speed, distance, angle, KP, KI, KD):
         wait(25)
         self.gyro.reset_angle(0) #Resets the gyro angle
         wait(10)
@@ -133,7 +118,11 @@ class Robot:
         Integral = 0
         Last_error = 0
 
-        while self.robot.distance() <= CM:
+        drive_speed, drive_direction = self.check_drive_direction(speed , distance)
+
+        CM = 10 * distance #Makes the MM CM by multiplying it by 10
+
+        while fabs(self.robot.distance()) <= CM:
             if angle > target_value:
                 target_value += angle/abs(angle)
 
