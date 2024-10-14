@@ -15,13 +15,53 @@ class Robot:
     def __init__(self):
         self.wheel_diameter=81.6
         self.axle_track= 96
+
         self.ev3 = EV3Brick()
-        self.left_motor = Motor(Port.A)
-        self.right_motor = Motor(Port.B)
-        self.C_motor = Motor(Port.C)
-        self.D_motor = Motor(Port.D)
-        self.gyro = GyroSensor(Port.S1)
-        self.ev3.screen.set_font(Font(size=12))
+
+        small_font = Font(size=12)
+        large_font = Font(size=14)
+
+        self.ev3.screen.set_font(size=small_font)
+        
+        failedsensor = 0 #assuming all sensors/motors are OK
+        while True:
+            try: 
+                self.gyro_port = Port.S1
+                self.gyro = GyroSensor(port = self.gyro_port)
+            except:
+                self.gyro = None
+                self.ev3.screen.print("PORT 1 GYRO NOT FOUND!!!")
+                failedsensor += 1
+            try:
+                self.left_motor = Motor(port = Port.A)
+            except:
+                self.left_motor = None
+                self.ev3.screen.print("PORT A MOTOR NOT FOUND!!!")
+                failedsensor += 1
+            try:
+                self.right_motor = Motor(port = Port.B)
+            except:
+                self.right_motor = None
+                self.ev3.screen.print("PORT B MOTOR NOT FOUND!!!")
+                failedsensor += 1
+            try:
+                self.C_motor = Motor(port = Port.C)
+            except:
+                self.C_motor = None
+                self.ev3.screen.print("PORT C MOTOR NOT FOUND!!!")
+                failedsensor += 1
+            try:
+                self.D_motor = Motor(port = Port.D)
+            except:
+                self.D_motor = None
+                self.ev3.screen.print("PORT D MOTOR NOT FOUND!!!")
+                failedsensor += 1
+            if failedsensor == 0:
+                break
+            else:
+                failedsensor = 0
+                self.ev3.screen.print("Please check cable connection + replug!")
+                wait(2000)
         self.robot = DriveBase(self.left_motor, self.right_motor, self.wheel_diameter, self.axle_track)
 
         self.Min_Power=20 #sets the minimum power the robot can drive to 14
