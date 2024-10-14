@@ -27,3 +27,4 @@ def Run1():
     robot.turn(-30, KP, KI, KD)
     robot.B_PID(40,5, KP, KI, KD)
     run_parallel(robot.C_motor.run_angle(speed=180, rotation_angle=360), robot.D_motor.run_angle(speed=180, rotation_angle=360))
+Run1():
