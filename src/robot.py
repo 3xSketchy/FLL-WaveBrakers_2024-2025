@@ -30,37 +30,37 @@ class Robot:
                 self.gyro = GyroSensor(port = self.gyro_port)
             except:
                 self.gyro = None
-                self.ev3.screen.print("PORT 1 GYRO NOT FOUND!!!")
+                self.ev3.screen.print("Sensor Port 1 not found")
                 failedsensor += 1
             try:
                 self.left_motor = Motor(port = Port.A)
             except:
                 self.left_motor = None
-                self.ev3.screen.print("PORT A MOTOR NOT FOUND!!!")
+                self.ev3.screen.print("Motor Port A not found")
                 failedsensor += 1
             try:
                 self.right_motor = Motor(port = Port.B)
             except:
                 self.right_motor = None
-                self.ev3.screen.print("PORT B MOTOR NOT FOUND!!!")
+                self.ev3.screen.print("Motor Port B not found")
                 failedsensor += 1
             try:
                 self.C_motor = Motor(port = Port.C)
             except:
                 self.C_motor = None
-                self.ev3.screen.print("PORT C MOTOR NOT FOUND!!!")
+                self.ev3.screen.print("Motor Port C not found")
                 failedsensor += 1
             try:
                 self.D_motor = Motor(port = Port.D)
             except:
                 self.D_motor = None
-                self.ev3.screen.print("PORT D MOTOR NOT FOUND!!!")
+                self.ev3.screen.print("Motor Port D not found")
                 failedsensor += 1
             if failedsensor == 0:
                 break
             else:
                 failedsensor = 0
-                self.ev3.screen.print("Please check cable connection + replug!")
+                self.ev3.screen.print("Check the cables and replug them")
                 wait(2000)
         self.robot = DriveBase(self.left_motor, self.right_motor, self.wheel_diameter, self.axle_track)
 
@@ -73,16 +73,16 @@ class Robot:
         self.robot.reset()
 
     def PID(self,speed, MM, KP, KI, KD):
-        KP=KP
-        KI=KI
-        KD=KD
         CM = 10 * MM #Makes the MM CM by multiplying it by 10
+
         wait(25)
         self.gyro.reset_angle(0) #Resets the gyro angle
         wait(10)
+
         target_value = 0
         Integral = 0
         Last_error = 0
+
         while self.robot.distance() <= CM:
             error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
@@ -91,21 +91,23 @@ class Robot:
             Derivative = error-Last_error
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
             Correction = Pfix+Ifix+Dfix #Adds all the PID Totals to one Amount
+
             self.robot.drive(speed*3.6, 0-Correction)
+
             Last_error = error #Sets our Last error up
         Stop()
 
     def B_PID(self,speed, MM, KP, KI, KD):
-        KP=KP
-        KI=KI
-        KD=KD
         CM = -10*MM #Makes the MM CM by multiplying it by 10
+
         wait(25)
         self.yro.reset_angle(0) #Resets the gyro angle
         wait(10)
+
         target_value = 0
         Integral = 0
         Last_error = 0
+
         while self.robot.distance() >= CM:
             error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
@@ -114,24 +116,27 @@ class Robot:
             Derivative = error-Last_error
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
             Correction = Pfix+Ifix+Dfix #Adds all the PID Totals to one Amount
+
             self.robot.drive(speed*-3.6, 0-Correction)
+
             Last_error = error #Sets our Last error up
         Stop()
 
     def Curve(self,speed, MM, angle, KP, KI, KD):
-        KP=KP
-        KI=KI
-        KD=KD
         CM = 10 * MM #Makes the MM CM by multiplying it by 10
+
         wait(25)
         self.gyro.reset_angle(0) #Resets the gyro angle
         wait(10)
+
         target_value = 0
         Integral = 0
         Last_error = 0
+
         while self.robot.distance() <= CM:
             if angle > target_value:
                 target_value += angle/abs(angle)
+
             error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Integral =+ error
@@ -139,31 +144,37 @@ class Robot:
             Derivative = error-Last_error
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
             Correction = Pfix+Ifix+Dfix #Adds all the PID Totals to one Amount
+
             self.robot.drive(speed*3.6, 0-Correction)
+
             Last_error = error #Sets our Last error up
         Stop()
 
     def turn(self,angle, KP, KI, KD):
-        KP=KP
-        KI=KI
-        KD=KD
         target_value=angle #makes the target value the angle you gave
         Last_error=0 #sets last error to 0
+
         wait(25)
         self.gyro.reset_angle(0)
         wait(20) #waits 1/100 of a second
+
         error = target_value-self.gyro.angle() #sets error to the the turn
+
         while error != 0: #while theres still an error(a turn to do)
             error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Derivative = error-Last_error
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
             Correction = Pfix+Dfix #Adds all the PID Totals to one Amount
+
             if abs(Correction) > Max_Power: #if the absolute of correction is higher than 360
                 Correction = Max_Power*target_value/abs(target_value) #sets the correction to 360 times target value/absolute of targer value
+
             elif abs(Correction) < Min_Power: #if the absolute of correction is lower than 14
                 Correction = Min_Power*target_value/abs(target_value) #sets the correction to 14 times target value/absolute of targer value
+
             run_parallel (self.left_motor.run(speed=0-Correction), self.right_motor.run(speed=Correction))
             wait(10)
+
             Last_error=error #sets the error to the last error
         Stop()
