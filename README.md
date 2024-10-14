@@ -9,4 +9,4 @@ This repository contains the MicroPython code for our EV3 robot that we used dur
   - robot.py : Robot class and functions
   - main.py : Main code
 
-![image](resources/submerged.png)
+    ![image](resources/submerged.png)
