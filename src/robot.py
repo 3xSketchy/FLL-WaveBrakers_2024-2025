@@ -71,6 +71,25 @@ class Robot:
         self.robot.stop()
         run_parallel(self.left_motor.hold(), self.right_motor.hold())
 
+    def gyro_calib(self):
+    print("robot: gyro_calib")
+    self.ev3.light.on(Color.RED)
+    wait(200)
+    gyro = Ev3devSensor(self.gyro_port)
+
+    for i in range(3):
+        gyro.read("GYRO-CAL")
+        wait(200)
+        angle = int(gyro.read("GYRO-ANG")[0]) 
+        if angle == 0:
+            print("gyro calib done!", i)
+            break
+    wait(200)
+    self.gyro.reset_angle(0)
+    self.ev3.speaker.beep()
+    self.ev3.light.on(Color.GREEN)
+
+
     def check_drive_direction(self, speed, drive_distance): #Will Make the PID a forward or a backwards
 
         if speed * drive_distance > 0:  # forward driving
