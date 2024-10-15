@@ -63,6 +63,7 @@ class Robot:
                 self.ev3.screen.print("Check the cables and replug them")
                 wait(2000)
         self.robot = DriveBase(self.left_motor, self.right_motor, self.wheel_diameter, self.axle_track)
+        self.gyro.angle_reset()
 
         self.Min_Power=20 #sets the minimum power the robot can drive to 14
         self.Max_Power=125 #sets the maximum power the robot can drive to 360
@@ -82,10 +83,9 @@ class Robot:
         return drive_speed, drive_direction
 
     def PID(self,speed, distance, KP, KI, KD):
-        wait(25)
-        self.gyro.reset_angle(0) #Resets the gyro angle
 
         Distance = self.robot.distance()
+        Angle = self.gyro.angle()
 
         target_value = 0
         Integral = 0
@@ -96,7 +96,7 @@ class Robot:
         CM = 10 * distance #Makes the MM CM by multiplying it by 10
 
         while fabs(self.robot.distance() - Distance) <= fabs(CM):
-            error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
+            error = target_value - (self.gyro.angle() - Angle) #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Integral =+ error
             Ifix = Integral*KI #Multiplies Our Integral by the Integral Gain to have our Integral total
@@ -110,10 +110,9 @@ class Robot:
         Stop()
 
     def Curve(self,speed, distance, angle, KP, KI, KD):
-        wait(25)
-        self.gyro.reset_angle(0) #Resets the gyro angle
         
         Distance = self.robot.distance()
+        Angle = self.gyro.angle()
 
         target_value = 0
         Integral = 0
@@ -127,7 +126,7 @@ class Robot:
             if angle > target_value:
                 target_value += angle/abs(angle)
 
-            error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
+            error = target_value - (self.gyro.angle() - Angle) #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Integral =+ error
             Ifix = Integral*KI #Multiplies Our Integral by the Integral Gain to have our Integral total
@@ -141,16 +140,15 @@ class Robot:
         Stop()
 
     def turn(self,angle, KP, KI, KD):
-        target_value=angle #makes the target value the angle you gave
         Last_error=0 #sets last error to 0
 
-        wait(25)
-        self.gyro.reset_angle(0)
+        Angle = self.gyro.angle()
+        angle_target = angle - (Angle - Angle)
 
-        error = target_value-self.gyro.angle() #sets error to the the turn
+        error = angle_target #sets error to the the turn
 
         while error != 0: #while theres still an error(a turn to do)
-            error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
+            error = angle - (self.gyro.angle() - Angle) #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Derivative = error-Last_error
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
