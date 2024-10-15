@@ -69,8 +69,7 @@ class Robot:
 
     def Stop(self): # makes the robot stop
         self.robot.stop()
-        run_parallel(self.left_motor.brake(), self.right_motor.brake())
-        self.robot.reset()
+        run_parallel(self.left_motor.hold(), self.right_motor.hold())
 
     def check_drive_direction(self, speed, drive_distance): #Will Make the PID a forward or a backwards
 
@@ -85,7 +84,8 @@ class Robot:
     def PID(self,speed, distance, KP, KI, KD):
         wait(25)
         self.gyro.reset_angle(0) #Resets the gyro angle
-        wait(10)
+
+        Distance = self.robot.distance()
 
         target_value = 0
         Integral = 0
@@ -95,7 +95,7 @@ class Robot:
 
         CM = 10 * distance #Makes the MM CM by multiplying it by 10
 
-        while fabs(self.robot.distance()) <= CM:
+        while fabs(self.robot.distance() - Distance) <= fabs(CM):
             error = target_value - self.gyro.angle() #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Integral =+ error
@@ -112,7 +112,8 @@ class Robot:
     def Curve(self,speed, distance, angle, KP, KI, KD):
         wait(25)
         self.gyro.reset_angle(0) #Resets the gyro angle
-        wait(10)
+        
+        Distance = self.robot.distance()
 
         target_value = 0
         Integral = 0
@@ -122,7 +123,7 @@ class Robot:
 
         CM = 10 * distance #Makes the MM CM by multiplying it by 10
 
-        while fabs(self.robot.distance()) <= CM:
+        while fabs(self.robot.distance() - Distance) <= CM: #while The absolute of the robot distance travelled is smaller than the cm
             if angle > target_value:
                 target_value += angle/abs(angle)
 
@@ -145,7 +146,6 @@ class Robot:
 
         wait(25)
         self.gyro.reset_angle(0)
-        wait(20) #waits 1/100 of a second
 
         error = target_value-self.gyro.angle() #sets error to the the turn
 
