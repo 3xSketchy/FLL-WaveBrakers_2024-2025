@@ -1,13 +1,12 @@
 #!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (Motor, GyroSensor)
-from pybricks.parameters import Port, Stop, Direction, Button
+from pybricks.iodevices import Ev3devSensor
+from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile, Font
-from micropython import opt_level
-from pybricks.experimental import run_parallel
-opt_level(2)
+from math import fabs
 
 class Robot:
 
@@ -20,7 +19,7 @@ class Robot:
         small_font = Font(size=12)
         large_font = Font(size=14)
 
-        self.ev3.screen.set_font(size=small_font)
+        self.ev3.screen.set_font(small_font)
         
         failedsensor = 0 #assuming all sensors/motors are OK
         while True:
@@ -62,32 +61,32 @@ class Robot:
                 self.ev3.screen.print("Check the cables and replug them")
                 wait(2000)
         self.robot = DriveBase(self.left_motor, self.right_motor, self.wheel_diameter, self.axle_track)
-        self.gyro.angle_reset()
+        self.gyro.reset_angle(0)
 
         self.Min_Power=20 #sets the minimum power the robot can drive to 14
         self.Max_Power=125 #sets the maximum power the robot can drive to 360
 
     def Stop(self): # makes the robot stop
         self.robot.stop()
-        run_parallel(self.left_motor.hold(), self.right_motor.hold())
+        self.left_motor.hold()
+        self.right_motor.hold()
 
     def gyro_calib(self):
-    print("robot: gyro_calib")
-    self.ev3.light.on(Color.RED)
-    wait(200)
-    gyro = Ev3devSensor(self.gyro_port)
-
-    for i in range(3):
-        gyro.read("GYRO-CAL")
+        print("robot: gyro_calib")
+        self.ev3.light.on(Color.RED)
         wait(200)
-        angle = int(gyro.read("GYRO-ANG")[0]) 
-        if angle == 0:
-            print("gyro calib done!", i)
-            break
-    wait(200)
-    self.gyro.reset_angle(0)
-    self.ev3.speaker.beep()
-    self.ev3.light.on(Color.GREEN)
+        gyro = Ev3devSensor(self.gyro_port)
+        for i in range(3):
+            gyro.read("GYRO-CAL")
+            wait(200)
+            angle = int(gyro.read("GYRO-ANG")[0]) 
+            if angle == 0:
+                print("gyro calib done!", i)
+                break
+        wait(200)
+        self.gyro.reset_angle(0)
+        self.ev3.speaker.beep()
+        self.ev3.light.on(Color.GREEN)
 
 
     def check_drive_direction(self, speed, drive_distance): #Will Make the PID a forward or a backwards
@@ -122,10 +121,10 @@ class Robot:
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
             Correction = Pfix+Ifix+Dfix #Adds all the PID Totals to one Amount
 
-            self.robot.drive(speed*3.6, 0-Correction)
+            self.robot.drive(drive_speed*3.6, 0-Correction)
 
             Last_error = error #Sets our Last error up
-        Stop()
+        self.Stop()
 
     def Curve(self,speed, distance, angle, KP, KI, KD):
         
@@ -161,9 +160,9 @@ class Robot:
         Last_error=0 #sets last error to 0
 
         Angle = self.gyro.angle()
-        angle_target = angle - (Angle - Angle)
+        self.target_value = angle - (Angle - Angle)
 
-        error = angle_target #sets error to the the turn
+        error = self.target_value #sets error to the the turn
 
         while error != 0: #while theres still an error(a turn to do)
             error = angle - (self.gyro.angle() - Angle) #Sets the error to the target value - the angle
@@ -172,14 +171,15 @@ class Robot:
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
             Correction = Pfix+Dfix #Adds all the PID Totals to one Amount
 
-            if abs(Correction) > Max_Power: #if the absolute of correction is higher than 360
-                Correction = Max_Power*target_value/abs(target_value) #sets the correction to 360 times target value/absolute of targer value
+            if abs(Correction) > self.Max_Power: #if the absolute of correction is higher than 360
+                Correction = self.Max_Power*self.target_value/abs(self.target_value) #sets the correction to 360 times target value/absolute of targer value
 
-            elif abs(Correction) < Min_Power: #if the absolute of correction is lower than 14
-                Correction = Min_Power*target_value/abs(target_value) #sets the correction to 14 times target value/absolute of targer value
+            elif abs(Correction) < self.Min_Power: #if the absolute of correction is lower than 14
+                Correction = self.Min_Power*self.target_value/abs(self.target_value) #sets the correction to 14 times target value/absolute of targer value
 
-            run_parallel (self.left_motor.run(speed=0-Correction), self.right_motor.run(speed=Correction))
+            self.left_motor.run(speed=0-Correction)
+            self.right_motor.run(speed=Correction)
             wait(10)
 
             Last_error=error #sets the error to the last error
-        Stop()
+        self.Stop()
