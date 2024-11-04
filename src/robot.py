@@ -99,7 +99,7 @@ class Robot:
         drive_speed = drive_direction * fabs(speed)
         return drive_speed, drive_direction
 
-    def PID(self,speed, distance, KP, KI, KD):
+    def PID(self,speed, distance, KP=2.25, KI=0.00001, KD=3.5):
 
         Distance = self.robot.distance()
         Angle = self.gyro.angle()
@@ -126,7 +126,7 @@ class Robot:
             Last_error = error #Sets our Last error up
         self.Stop()
 
-    def Curve(self,speed, distance, angle, KP, KI, KD):
+    def Curve(self,speed, distance, angle, KP=2.25, KI=0.00001, KD=3.5):
         
         Distance = self.robot.distance()
         Angle = self.gyro.angle()
@@ -156,7 +156,7 @@ class Robot:
             Last_error = error #Sets our Last error up
         Stop()
 
-    def turn(self,angle, KP, KI, KD):
+    def turn(self,angle, KP=2.25, KD=3.5):
         Last_error=0 #sets last error to 0
 
         Angle = self.gyro.angle()
