@@ -27,13 +27,13 @@ def Run():
         robot.D_motor.run_angle(speed=180, rotation_angle=360)
     run_parallel(C_motor1, D_motor1)
 def Run1():
-    KP=3
+    KP=4
     KI=1.00001
     KD=3.5
-    robot.PID(40,62.5,KP,KI,KD)
-    robot.turn(-95,KP,KD)
-    wait(10)
-    robot.PID(30, 15,KP,KI,KD)
-    robot.C_motor.run_angle(speed=180, rotation_angle=90)
+    robot.PID(70,50,KP,KI,KD)
+    robot.turn(30,KP,KD)
+    robot.PID(70,25,KP,KI,KD)
+    robot.turn(-120,KP,KD)
+    robot.D_motor.run_angle(speed=180, rotation_angle=40)
 robot.gyro_calib()
 Run1()
