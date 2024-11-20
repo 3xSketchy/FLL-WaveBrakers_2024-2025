@@ -24,11 +24,11 @@ class Robot:
         failedsensor = 0 #assuming all sensors/motors are OK
         while True:
             try: 
-                self.gyro_port = Port.S1
+                self.gyro_port = Port.S2
                 self.gyro = GyroSensor(port = self.gyro_port)
             except:
                 self.gyro = None
-                self.ev3.screen.print("Sensor Port 1 not found")
+                self.ev3.screen.print("Sensor Port 2 not found")
                 failedsensor += 1
             try:
                 self.left_motor = Motor(port = Port.A)
@@ -126,36 +126,6 @@ class Robot:
             Last_error = error #Sets our Last error up
         self.Stop()
 
-    def Curve(self,speed, distance, angle, KP=2.25, KI=0.00001, KD=3.5):
-        
-        Distance = self.robot.distance()
-        Angle = self.gyro.angle()
-
-        target_value = 0
-        Integral = 0
-        Last_error = 0
-
-        drive_speed, drive_direction = self.check_drive_direction(speed , distance)
-
-        CM = 10 * distance #Makes the MM CM by multiplying it by 10
-
-        while fabs(self.robot.distance() - Distance) <= CM: #while The absolute of the robot distance travelled is smaller than the cm
-            if angle > target_value:
-                target_value += angle/abs(angle)
-
-            error = target_value - (self.gyro.angle() - Angle) #Sets the error to the target value - the angle
-            Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
-            Integral =+ error
-            Ifix = Integral*KI #Multiplies Our Integral by the Integral Gain to have our Integral total
-            Derivative = error-Last_error
-            Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
-            Correction = Pfix+Ifix+Dfix #Adds all the PID Totals to one Amount
-
-            self.robot.drive(speed*3.6, 0-Correction)
-
-            Last_error = error #Sets our Last error up
-        Stop()
-
     def turn(self,angle, KP=2.25, KD=3.5):
         Last_error=0 #sets last error to 0
 
@@ -177,9 +147,10 @@ class Robot:
             elif abs(Correction) < self.Min_Power: #if the absolute of correction is lower than 14
                 Correction = self.Min_Power*self.target_value/abs(self.target_value) #sets the correction to 14 times target value/absolute of targer value
 
-            self.left_motor.run(speed=0-Correction)
-            self.right_motor.run(speed=Correction)
+            self.left_motor.run(speed=(0-Correction)*2)
+            self.right_motor.run(speed=Correction*2)
             wait(10)
 
             Last_error=error #sets the error to the last error
         self.Stop()
+        wait(150)

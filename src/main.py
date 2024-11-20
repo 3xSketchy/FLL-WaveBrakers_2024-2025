@@ -5,7 +5,7 @@ from pybricks.tools import wait, StopWatch
 from pybricks.media.ev3dev import SoundFile, ImageFile, Font
 from micropython import opt_level
 from pybricks.experimental import run_parallel
-opt_level(2)
+opt_level(3)
 
 robot = Robot()
 
@@ -45,17 +45,23 @@ def Clearmap():
     KP=2
     KD=2.5
     KI=0.000001
-    robot.PID(50, 30, KP,KI , KD)
+    robot.PID(55, 30, KP,KI , KD)
     robot.turn(-45,KP,KD)
     wait(200)
-    robot.PID(50,18,KP,KI,KD)
-    robot.PID(-50,8,KP,KI,KD)
+    robot.PID(55,18,KP,KI,KD)
+    robot.PID(-55,8,KP,KI,KD)
     robot.turn(-30,KP,KD)
-    robot.PID(50,15,KP,KI,KD)
-    robot.PID(-50,20,KP,KI,KD)
+    robot.PID(55,15,KP,KI,KD)
+    robot.PID(-55,20,KP,KI,KD)
     robot.turn(60,KP,KD)
-    robot.PID(60,40,KP,KI,KD)
+    robot.PID(70,40,KP,KI,KD)
     wait(100)
-    robot.PID(-70,70,KP,KI,KD)
+    robot.turn(-65,KP,KD)
+    robot.PID(80,50,KP,KI,KD)
+    robot.turn(-10,KP,KD)
+    robot.PID(50,20,KP,KI,KD)
+    robot.PID(-50,10,KP,KI,KD)
+    robot.turn(15,KP,KD)
+    robot.PID(55,25,KP,KI,KD)
 robot.gyro_calib()
-Run1()
+Clearmap()
