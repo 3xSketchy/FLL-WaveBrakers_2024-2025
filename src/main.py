@@ -27,31 +27,35 @@ def Run():
         robot.D_motor.run_angle(speed=180, rotation_angle=360)
     run_parallel(C_motor1, D_motor1)
 def Run1():
-    KP=3
+    KP=2.5
     KI=1.00001
     KD=3.5
-    robot.PID(65,50,KP,KI,KD)
+    robot.PID(60,50,KP,KI,KD)
     robot.turn(30,KP,KD)
-    robot.PID(65,19,KP,KI,KD)
-    robot.turn(-115,KP,KD)
+    robot.PID(60,19,KP,KI,KD)
+    robot.turn(-110,KP,KD)
     robot.D_motor.run_angle(speed=180, rotation_angle=160)
     wait(100)
     robot.PID(40,27,KP,KI,KD)
     wait(100)
     robot.D_motor.run_angle(speed=180, rotation_angle=-130)
-    wait(200)
+    wait(100)
     robot.PID(-60,25,KP,KI,KD)
 def Clearmap():
-    KP=1.5
-    KD=3
-    KI=0.00001
-    robot.PID(40, 25, KP,KI , KD)
+    KP=2
+    KD=2.5
+    KI=0.000001
+    robot.PID(50, 30, KP,KI , KD)
     robot.turn(-45,KP,KD)
-    robot.PID(80,20,KP,KI,KD)
-    robot.PID(-40,10,KP,KI,KD)
-    robot.turn(35,KP,KD)
-    robot.PID(60,20,KP,KI,KD)
-    robot.turn(-30)
-    robot.PID(40,10,KP,KI,KD)
+    wait(200)
+    robot.PID(50,18,KP,KI,KD)
+    robot.PID(-50,8,KP,KI,KD)
+    robot.turn(-30,KP,KD)
+    robot.PID(50,15,KP,KI,KD)
+    robot.PID(-50,20,KP,KI,KD)
+    robot.turn(60,KP,KD)
+    robot.PID(60,40,KP,KI,KD)
+    wait(100)
+    robot.PID(-70,70,KP,KI,KD)
 robot.gyro_calib()
-Clearmap()
+Run1()
