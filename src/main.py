@@ -42,26 +42,34 @@ def Run1():
     wait(100)
     robot.PID(-60,25,KP,KI,KD)
 def Clearmap():
-    KP=2
+    KP=3
     KD=2.5
     KI=0.000001
-    robot.PID(55, 30, KP,KI , KD)
+    # Octopus Start
+    robot.PID(55,30,KP,KI,KD)
     robot.turn(-45,KP,KD)
     wait(200)
     robot.PID(55,18,KP,KI,KD)
     robot.PID(-55,8,KP,KI,KD)
-    robot.turn(-30,KP,KD)
-    robot.PID(55,15,KP,KI,KD)
-    robot.PID(-55,20,KP,KI,KD)
+    robot.turn(-40,KP,KD)
+    robot.PID(55,20,KP,KI,KD)
+    robot.PID(-55,23,KP,KI,KD)
+    # Octopus End
     robot.turn(60,KP,KD)
     robot.PID(70,40,KP,KI,KD)
     wait(100)
-    robot.turn(-65,KP,KD)
+    robot.turn(-60,KP,KD)
     robot.PID(80,50,KP,KI,KD)
-    robot.turn(-10,KP,KD)
+    robot.turn(-20,KP,KD)
     robot.PID(50,20,KP,KI,KD)
     robot.PID(-50,10,KP,KI,KD)
     robot.turn(15,KP,KD)
     robot.PID(55,25,KP,KI,KD)
+    robot.turn(25,KP,KD)
+    robot.PID(50,15,KP,KI,KD)
+    robot.turn(-50,KP,KD)
+    robot.PID(80,50,KP,KI,KD)
+    robot.turn(-50,KP,KD)
+    robot.PID(90,50,KP,KI,KD)
 robot.gyro_calib()
 Clearmap()

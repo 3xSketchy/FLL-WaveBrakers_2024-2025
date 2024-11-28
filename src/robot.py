@@ -24,11 +24,11 @@ class Robot:
         failedsensor = 0 #assuming all sensors/motors are OK
         while True:
             try: 
-                self.gyro_port = Port.S2
+                self.gyro_port = Port.S1
                 self.gyro = GyroSensor(port = self.gyro_port)
             except:
                 self.gyro = None
-                self.ev3.screen.print("Sensor Port 2 not found")
+                self.ev3.screen.print("Sensor Port 1 not found")
                 failedsensor += 1
             try:
                 self.left_motor = Motor(port = Port.A)
@@ -61,11 +61,11 @@ class Robot:
                 self.ev3.screen.print("Check the cables and replug them")
                 wait(2000)
         self.robot = DriveBase(self.left_motor, self.right_motor, self.wheel_diameter, self.axle_track)
+        wait(100)
         self.gyro.reset_angle(0)
-
-        self.Min_Power=20 #sets the minimum power the robot can drive to 14
-        self.Max_Power=125 #sets the maximum power the robot can drive to 360
-
+        wait(100)
+        self.Min_Power=25 #sets the minimum power the robot can drive to 24
+        self.Max_Power=135 #sets the maximum power the robot can drive to 100
     def Stop(self): # makes the robot stop
         self.robot.stop()
         self.left_motor.hold()
@@ -139,7 +139,7 @@ class Robot:
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
             Derivative = error-Last_error
             Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
-            Correction = Pfix+Dfix #Adds all the PID Totals to one Amount
+            Correction = (Pfix+Dfix)*2 #Adds all the PID Totals to one Amount
 
             if abs(Correction) > self.Max_Power: #if the absolute of correction is higher than 360
                 Correction = self.Max_Power*self.target_value/abs(self.target_value) #sets the correction to 360 times target value/absolute of targer value
@@ -147,8 +147,8 @@ class Robot:
             elif abs(Correction) < self.Min_Power: #if the absolute of correction is lower than 14
                 Correction = self.Min_Power*self.target_value/abs(self.target_value) #sets the correction to 14 times target value/absolute of targer value
 
-            self.left_motor.run(speed=(0-Correction)*2)
-            self.right_motor.run(speed=Correction*2)
+            self.left_motor.run(speed=0-Correction)
+            self.right_motor.run(speed=Correction)
             wait(10)
 
             Last_error=error #sets the error to the last error
