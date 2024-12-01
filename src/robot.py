@@ -64,8 +64,8 @@ class Robot:
         wait(100)
         self.gyro.reset_angle(0)
         wait(100)
-        self.Min_Power=25 #sets the minimum power the robot can drive to 24
-        self.Max_Power=135 #sets the maximum power the robot can drive to 100
+        self.Min_Power=30 #sets the minimum power the robot can drive to 24
+        self.Max_Power=130 #sets the maximum power the robot can drive to 100
     def Stop(self): # makes the robot stop
         self.robot.stop()
         self.left_motor.hold()
