@@ -126,7 +126,7 @@ class Robot:
             Last_error = error #Sets our Last error up
         self.Stop()
 
-    def turn(self,angle, KP=2.25, KD=3.5):
+    def turn(self,angle, KP=2.25):
         Last_error=0 #sets last error to 0
 
         Angle = self.gyro.angle()
@@ -137,9 +137,7 @@ class Robot:
         while error != 0: #while theres still an error(a turn to do)
             error = angle - (self.gyro.angle() - Angle) #Sets the error to the target value - the angle
             Pfix = error*KP #Multiplies Our Proportional by the Proportional Gain to have our Proportional total
-            Derivative = error-Last_error
-            Dfix = Derivative*KD #Multiplies Our Derivative by the Derivative Gain to have our Derivative total
-            Correction = (Pfix+Dfix)*2 #Adds all the PID Totals to one Amount
+            Correction = (Pfix)*1.8 #Adds all the PID Totals to one Amount
 
             if abs(Correction) > self.Max_Power: #if the absolute of correction is higher than 360
                 Correction = self.Max_Power*self.target_value/abs(self.target_value) #sets the correction to 360 times target value/absolute of targer value
